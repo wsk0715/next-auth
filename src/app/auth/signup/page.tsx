@@ -5,8 +5,7 @@ import Link from 'next/link';
 import DefaultLayout from '@/components/DefaultLayout';
 import Header from '@/components/Header';
 import { GoToMain } from '@/components/GoToMain';
-import bcrypt from 'bcryptjs';
-import { supabase } from '@/lib/supabaseClient';
+import { AuthAPI } from '@/api/authAPI';
 
 export default function SignUpPage() {
 	const [formData, setFormData] = useState({
@@ -21,19 +20,17 @@ export default function SignUpPage() {
 		e.preventDefault();
 		setError('');
 
-		// 비밀번호 일치 여부 확인
+		// 클라이언트 측 유효성 검사
 		if (formData.password !== formData.passwordConfirm) {
 			setError('비밀번호가 일치하지 않습니다.');
 			return;
 		}
 
-		// 비밀번호 길이 검증
 		if (formData.password.length < 8) {
 			setError('비밀번호는 8자 이상이어야 합니다.');
 			return;
 		}
 
-		// 이메일 형식 검증
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!emailRegex.test(formData.email)) {
 			setError('올바른 이메일 형식이 아닙니다.');
@@ -41,41 +38,19 @@ export default function SignUpPage() {
 		}
 
 		try {
-			// id 중복 체크
-			const { data: existingUser } = await supabase.from('tb_user').select('user_id').eq('user_id', formData.id).single();
+			// 회원가입 API 호출
+			await AuthAPI.signup({
+				userId: formData.id,
+				userEmail: formData.email,
+				userPw: formData.password,
+			});
 
-			if (existingUser) {
-				setError('이미 사용 중인 아이디입니다.');
-				return;
-			}
-
-			// 이메일 중복 체크
-			const { data: existingEmail } = await supabase.from('tb_user').select('user_email').eq('user_email', formData.email).single();
-
-			if (existingEmail) {
-				setError('이미 사용 중인 이메일입니다.');
-				return;
-			}
-
-			// pw 암호화
-			const hashedPassword = await bcrypt.hash(formData.password, 10);
-
-			// 회원가입 처리
-			const { error: insertError } = await supabase.from('tb_user').insert([
-				{
-					user_id: formData.id,
-					user_email: formData.email,
-					user_pw: hashedPassword,
-				},
-			]);
-
-			if (insertError) throw insertError;
-
+			// 회원가입 성공 응답
 			alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
 			window.location.href = '/auth/login';
 		} catch (err) {
 			console.error('회원가입 에러:', err);
-			setError('회원가입 중 오류가 발생했습니다.');
+			setError(err instanceof Error ? err.message : '회원가입 중 오류가 발생했습니다.');
 		}
 	};
 
