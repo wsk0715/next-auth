@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import bcryptjs from 'bcryptjs';
 import Header from '@/components/Header';
+import { GoToMain } from '@/components/GoToMain';
 
 export default function SupabasePage() {
 	// Supabase 클라이언트 생성
@@ -62,7 +63,7 @@ export default function SupabasePage() {
 	return (
 		<DefaultLayout>
 			<Header title="Supabase 연결 페이지" />
-			<div className="flex-1">
+			<div className="flex-1 flex flex-col justify-between">
 				<div className="h-fit flex justify-center items-center gap-4 px-4 py-5">
 					<button onClick={insertTestUser} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
 						테스트 유저 생성
@@ -71,6 +72,7 @@ export default function SupabasePage() {
 						테스트 유저 삭제
 					</button>
 				</div>
+				<GoToMain />
 			</div>
 		</DefaultLayout>
 	);
