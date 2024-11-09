@@ -5,6 +5,8 @@ import Link from 'next/link';
 import DefaultLayout from '@/components/DefaultLayout';
 import Header from '@/components/Header';
 import { GoToMain } from '@/components/GoToMain';
+import bcrypt from 'bcryptjs';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function SignUpPage() {
 	const [formData, setFormData] = useState({
@@ -16,14 +18,41 @@ export default function SignUpPage() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setError('');
 
 		if (formData.password !== formData.passwordConfirm) {
 			setError('비밀번호가 일치하지 않습니다.');
 			return;
 		}
 
-		// TODO: 회원가입 로직 구현
-		console.log('회원가입 시도:', formData);
+		try {
+			// id 중복 체크
+			const { data: existingUser } = await supabase.from('tb_user').select('user_id').eq('user_id', formData.id).single();
+
+			if (existingUser) {
+				setError('이미 사용 중인 아이디입니다.');
+				return;
+			}
+
+			// pw 암호화
+			const hashedPassword = await bcrypt.hash(formData.password, 10);
+
+			// 회원가입 처리
+			const { error: insertError } = await supabase.from('tb_user').insert([
+				{
+					user_id: formData.id,
+					user_pw: hashedPassword,
+				},
+			]);
+
+			if (insertError) throw insertError;
+
+			alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
+			window.location.href = '/auth/login';
+		} catch (err) {
+			console.error('회원가입 에러:', err);
+			setError('회원가입 중 오류가 발생했습니다.');
+		}
 	};
 
 	return (
