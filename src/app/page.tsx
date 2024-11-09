@@ -7,9 +7,12 @@ export default function Home() {
 		<DefaultLayout>
 			<Header title="Next-auth"></Header>
 			<div className="flex-1">
-				<div className="flex justify-center gap-2 px-4 py-5">
+				<div className="flex flex-col items-center justify-center gap-2 px-4 py-5">
 					<Link href="/supabase" className="text-blue-500 hover:text-blue-700">
 						Supabase 페이지로 이동
+					</Link>
+					<Link href="/auth" className="text-blue-500 hover:text-blue-700">
+						ID/PW 인증 페이지로 이동
 					</Link>
 				</div>
 			</div>
