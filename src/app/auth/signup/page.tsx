@@ -23,8 +23,8 @@ export default function SignUpPage() {
 		setError('');
 
 		// 클라이언트 측 유효성 검사
-		const formUser = createUser({ id: formData.id, password: formData.password, passwordConfirm: formData.passwordConfirm, email: formData.email });
-		const validationError = validateUserSignup(formUser);
+		const formUser = createUser({ id: formData.id, password: formData.password, email: formData.email });
+		const validationError = validateUserSignup(formUser, formData.passwordConfirm);
 
 		if (validationError) {
 			setError(validationError);

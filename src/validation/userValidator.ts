@@ -1,7 +1,7 @@
 import { User } from '@/types/user';
 
-export function validateUserSignup(user: User) {
-	const { id, password, passwordConfirm, email } = user;
+export function validateUserSignup(user: User, passwordConfirm: string) {
+	const { id, password, email } = user;
 	const MIN_LENGTH_ID = 4;
 	const MIN_LENGTH_PASSWORD = 8;
 

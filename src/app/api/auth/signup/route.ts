@@ -1,37 +1,18 @@
-import { supabase } from '@/lib/supabaseClient';
+import { AuthService } from '@/services/AuthService';
+import { User } from '@/types/user';
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { createAuthRequest } from '@/types/auth';
-import { createUser } from '@/types/user';
 
 export async function POST(request: Request) {
 	try {
-		// 요청 데이터 받기
-		const { id, password, email } = await request.json();
+		const user: User = await request.json();
+		const result = await AuthService.getInstance().signup(user);
 
-		// Supabase Auth에 사용자 등록
-		const { data: authData, error: authError } = await supabase.auth.signUp(createAuthRequest(email, password));
-
-		// Supabase Auth 에러 처리
-		if (authError) throw authError;
-		if (!authData.user) throw new Error('인증 정보 생성에 실패하였습니다.');
-
-		// DB에 사용자 정보 저장
-		const hashedPassword = await bcrypt.hash(password, 10);
-		const userData = createUser({ id, password: hashedPassword, email, auth_uuid: authData.user.id });
-		const { error: dbError } = await supabase.from('tb_user').insert([userData]);
-
-		// DB 에러 처리
-		if (dbError) {
-			// DB 저장 실패 시 Auth 롤백
-			await supabase.auth.admin.deleteUser(authData.user.id);
-			throw dbError;
-		}
-
-		// 회원가입 성공 응답
-		return NextResponse.json({ message: '회원가입이 완료되었습니다.' });
+		return NextResponse.json(result);
 	} catch (error) {
-		console.error('회원가입 에러:', error);
+		console.error('Signup error:', error);
+
+		// TODO: 에러 핸들러 작성해서 클라이언트에 에러 전파
+
 		return NextResponse.json({ message: '회원가입 처리 중 오류가 발생했습니다.' }, { status: 500 });
 	}
 }

@@ -1,18 +1,16 @@
-import { supabase } from '@/lib/supabaseClient';
+import { AuthService } from '@/services/AuthService';
 import { NextResponse } from 'next/server';
 
 export async function POST() {
 	try {
-		const { error } = await supabase.auth.signOut(); // Header에 담겨 있는 Authorization 필드 사용
+		const result = await AuthService.getInstance().logout();
 
-		if (error) {
-			console.error('Logout error:', error);
-			return NextResponse.json({ message: '로그아웃 처리 중 오류가 발생했습니다.' }, { status: 500 });
-		}
-
-		return NextResponse.json({ message: '로그아웃 성공' });
+		return NextResponse.json(result);
 	} catch (error) {
 		console.error('Logout error:', error);
+
+		// TODO: 에러 핸들러 작성해서 클라이언트에 에러 전파
+
 		return NextResponse.json({ message: '로그아웃 처리 중 오류가 발생했습니다.' }, { status: 500 });
 	}
 }
