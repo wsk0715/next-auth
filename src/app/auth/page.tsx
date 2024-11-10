@@ -6,28 +6,21 @@ import { GoToMain } from '@/components/GoToMain';
 import Header from '@/components/Header';
 import Link from 'next/link';
 import { AuthAPI } from '@/api/authAPI';
-
-interface UserInfo {
-	id: string;
-	email: string;
-}
+import { User, createUser } from '@/types/user';
 
 export default function AuthPage() {
-	const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+	const [userInfo, setUserInfo] = useState<User | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		const session = sessionStorage.getItem('session');
+
 		if (session) {
 			try {
-				const parsedSession = JSON.parse(session);
-				const user = parsedSession.user;
-				if (user) {
-					setUserInfo({
-						id: user.id,
-						email: user.email,
-					});
-				}
+				const user = JSON.parse(session).user;
+				const userInfo = createUser({ id: user.id, email: user.email });
+
+				setUserInfo(userInfo);
 			} catch (error) {
 				console.error('세션 정보 파싱 에러:', error);
 			}

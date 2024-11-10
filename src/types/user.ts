@@ -1,16 +1,19 @@
-// 기본 사용자 요청 타입
-export interface UserRequest {
+// User 타입
+export interface User {
 	id: string;
-	email: string;
-	password: string;
-	auth_uuid: string;
+	email?: string;
+	password?: string;
+	auth_uuid?: string;
+	passwordConfirm?: string;
 }
 
-export const createUserRequest = (id: string, email: string, password: string, auth_uuid: string): UserRequest => {
+// User 타입 생성 함수
+export function createUser({ id, email, password, auth_uuid, passwordConfirm }: { id: string; email?: string; password?: string; auth_uuid?: string; passwordConfirm?: string }): User {
 	return {
-		id: id,
-		email: email,
-		password: password,
-		auth_uuid: auth_uuid,
+		id,
+		...(email && { email }),
+		...(password && { password }),
+		...(auth_uuid && { auth_uuid }),
+		...(passwordConfirm && { passwordConfirm }),
 	};
-};
+}

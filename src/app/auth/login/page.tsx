@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import { GoToMain } from '@/components/GoToMain';
 import { AuthAPI } from '@/api/authAPI';
+import { createUser } from '@/types/user';
 
 export default function IdPwAuthPage() {
 	const [formData, setFormData] = useState({
@@ -20,13 +21,10 @@ export default function IdPwAuthPage() {
 
 		try {
 			// 로그인 API 호출 및 응답 데이터 받기
-			const response = await AuthAPI.login({
-				id: formData.id,
-				password: formData.password,
-			});
+			const formUser = createUser({ id: formData.id, password: formData.password });
+			await AuthAPI.login(formUser);
 
 			// 로그인 성공 응답
-			console.log(response);
 			alert('로그인에 성공했습니다.');
 			window.location.href = '/auth';
 		} catch (err) {

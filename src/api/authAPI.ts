@@ -1,20 +1,15 @@
 import { ClientSessionService } from '@/services/clientSessionService';
-
-interface UserCredentials {
-	id: string;
-	email?: string;
-	password: string;
-}
+import { User } from '@/types/user';
 
 export const AuthAPI = {
-	signup: async (credentials: UserCredentials) => {
+	signup: async (user: User) => {
 		// 회원가입 API 호출
 		const response = await fetch('/api/auth/signup', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(credentials),
+			body: JSON.stringify(user),
 		});
 
 		// 응답 데이터 받기
@@ -29,14 +24,14 @@ export const AuthAPI = {
 		return data;
 	},
 
-	login: async (credentials: UserCredentials) => {
+	login: async (user: User) => {
 		// 로그인 API 호출
 		const response = await fetch('/api/auth/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(credentials),
+			body: JSON.stringify(user),
 		});
 
 		// 응답 데이터 받기

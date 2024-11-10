@@ -2,12 +2,12 @@ import { supabase } from '@/lib/supabaseClient';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { createAuthRequest } from '@/types/auth';
-import { createUserRequest } from '@/types/user';
+import { createUser } from '@/types/user';
 
 export async function POST(request: Request) {
 	try {
 		// 요청 데이터 받기
-		const { id, email, password } = await request.json();
+		const { id, password, email } = await request.json();
 
 		// Supabase Auth에 사용자 등록
 		const { data: authData, error: authError } = await supabase.auth.signUp(createAuthRequest(email, password));
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
 		// DB에 사용자 정보 저장
 		const hashedPassword = await bcrypt.hash(password, 10);
-		const userData = createUserRequest(id, email, hashedPassword, authData.user.id);
+		const userData = createUser({ id, password: hashedPassword, email, auth_uuid: authData.user.id });
 		const { error: dbError } = await supabase.from('tb_user').insert([userData]);
 
 		// DB 에러 처리

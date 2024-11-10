@@ -6,6 +6,8 @@ import DefaultLayout from '@/components/DefaultLayout';
 import Header from '@/components/Header';
 import { GoToMain } from '@/components/GoToMain';
 import { AuthAPI } from '@/api/authAPI';
+import { validateUserSignup } from '@/validation/userValidator';
+import { createUser } from '@/types/user';
 
 export default function SignUpPage() {
 	const [formData, setFormData] = useState({
@@ -21,29 +23,17 @@ export default function SignUpPage() {
 		setError('');
 
 		// 클라이언트 측 유효성 검사
-		if (formData.password !== formData.passwordConfirm) {
-			setError('비밀번호가 일치하지 않습니다.');
-			return;
-		}
+		const formUser = createUser({ id: formData.id, password: formData.password, passwordConfirm: formData.passwordConfirm, email: formData.email });
+		const validationError = validateUserSignup(formUser);
 
-		if (formData.password.length < 8) {
-			setError('비밀번호는 8자 이상이어야 합니다.');
-			return;
-		}
-
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(formData.email)) {
-			setError('올바른 이메일 형식이 아닙니다.');
+		if (validationError) {
+			setError(validationError);
 			return;
 		}
 
 		try {
 			// 회원가입 API 호출
-			await AuthAPI.signup({
-				id: formData.id,
-				email: formData.email,
-				password: formData.password,
-			});
+			await AuthAPI.signup(formUser);
 
 			// 회원가입 성공 응답
 			alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
