@@ -1,15 +1,16 @@
-interface Session {
-	access_token: string;
-	refresh_token: string;
-	user?: {
-		id: string;
-		userId: string;
-	};
-}
+import { Session } from '@/types/session';
 
 export const ClientSessionService = {
 	// 세션 저장
 	setSession: (session: Session) => {
+		session = {
+			...session,
+			user: {
+				id: session.user.id,
+				email: session.user.email,
+			},
+		};
+
 		try {
 			sessionStorage.setItem('session', JSON.stringify(session));
 		} catch (error) {
