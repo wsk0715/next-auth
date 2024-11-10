@@ -1,7 +1,7 @@
 interface UserCredentials {
-	userId: string;
-	userEmail: string;
-	userPw: string;
+	id: string;
+	email: string;
+	password: string;
 }
 
 export const AuthAPI = {

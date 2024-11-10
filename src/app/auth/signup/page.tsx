@@ -40,9 +40,9 @@ export default function SignUpPage() {
 		try {
 			// 회원가입 API 호출
 			await AuthAPI.signup({
-				userId: formData.id,
-				userEmail: formData.email,
-				userPw: formData.password,
+				id: formData.id,
+				email: formData.email,
+				password: formData.password,
 			});
 
 			// 회원가입 성공 응답
