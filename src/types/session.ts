@@ -6,5 +6,5 @@ export interface Session {
 	expires_in?: number;
 	refresh_token: string;
 	token_type: string;
-	user: User;
+	user: Pick<User, 'id' | 'email'>;
 }
