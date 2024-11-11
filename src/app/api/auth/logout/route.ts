@@ -4,9 +4,9 @@ import { AuthService } from '@/services/AuthService';
 
 export async function POST() {
 	try {
-		const { message } = await AuthService.getInstance().logout();
+		const { result } = await AuthService.getInstance().logout();
 
-		return responseHandler({ message });
+		return responseHandler({ result });
 	} catch (error) {
 		return errorHandler(error);
 	}

@@ -4,9 +4,9 @@ import { InvalidAuthenticationError } from '@/lib/errors/client/authError';
 import { AuthApiError } from '@supabase/supabase-js';
 import { UserRepository } from '@/repositories/UserRepository';
 import { createUser, User } from '@/types/user';
-import { Session } from '@/types/session';
 import { supabase } from '@/lib/supabaseClient';
 import bcrypt from 'bcryptjs';
+import { HttpResponse } from '@/lib/response/responseHandler';
 
 export class AuthService {
 	private static instance: AuthService;
@@ -24,7 +24,7 @@ export class AuthService {
 	}
 
 	// 회원가입
-	async signup(user: User) {
+	async signup(user: User): Promise<HttpResponse<null>> {
 		try {
 			const { data: authData, error } = await supabase.auth.signUp({
 				email: user.email!,
@@ -32,7 +32,7 @@ export class AuthService {
 			});
 
 			if (error instanceof AuthApiError) {
-				throw new DatabaseError(error, error.message, error.status, error.code);
+				throw new DatabaseError(error);
 			}
 
 			const hashedPassword = await bcrypt.hash(user.password!, 10);
@@ -44,24 +44,24 @@ export class AuthService {
 			});
 
 			await this.userRepository.create(userData);
-			return { message: '회원가입 성공' };
+			return { result: { message: '회원가입 성공', status: 200, code: 'SIGNUP_SUCCESS' } };
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw error;
 			}
-			throw new ServiceError(error, '회원가입 중 오류가 발생했습니다.');
+			throw new ServiceError(error, { message: '회원가입 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_SERVICE' });
 		}
 	}
 
 	// 로그인
-	async login(user: User) {
+	async login(user: User): Promise<HttpResponse<object>> {
 		try {
 			const dbUser = await this.userRepository.findById(user.id);
 
 			const isValidPassword = await bcrypt.compare(user.password!, dbUser!.password!);
 
 			if (!dbUser || !isValidPassword) {
-				throw new InvalidAuthenticationError(null, '아이디 또는 비밀번호가 일치하지 않습니다.');
+				throw new InvalidAuthenticationError(null, { message: '아이디 또는 비밀번호가 일치하지 않습니다.', status: 401, code: 'INVALID_AUTHENTICATION' });
 			}
 
 			const { data: authData, error } = await supabase.auth.signInWithPassword({
@@ -70,11 +70,15 @@ export class AuthService {
 			});
 
 			if (error instanceof AuthApiError) {
-				throw new DatabaseError(error, error.message, error.status, error.code);
+				throw new DatabaseError(error);
 			}
 
 			return {
-				message: '로그인 성공',
+				result: {
+					message: '로그인 성공',
+					status: 200,
+					code: 'LOGIN_SUCCESS',
+				},
 				data: {
 					session: {
 						user: {
@@ -86,32 +90,32 @@ export class AuthService {
 						token_type: authData.session!.token_type,
 						expires_at: authData.session!.expires_at,
 						expires_in: authData.session!.expires_in,
-					} as Session,
+					},
 				},
 			};
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw error;
 			}
-			throw new ServiceError(error, '로그인 중 오류가 발생했습니다.');
+			throw new ServiceError(error, { message: '로그인 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_SERVICE' });
 		}
 	}
 
 	// 로그아웃
-	async logout() {
+	async logout(): Promise<HttpResponse<null>> {
 		try {
 			const { error } = await supabase.auth.signOut();
 
 			if (error instanceof AuthApiError) {
-				throw new DatabaseError(error, error.message, error.status, error.code);
+				throw new DatabaseError(error);
 			}
 
-			return { message: '로그아웃 성공' };
+			return { result: { message: '로그아웃 성공', code: 'LOGOUT_SUCCESS', status: 200 } };
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw error;
 			}
-			throw new ServiceError(error, '로그아웃 중 오류가 발생했습니다.');
+			throw new ServiceError(error, { message: '로그아웃 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_SERVICE' });
 		}
 	}
 }

@@ -1,39 +1,38 @@
 import { HttpError } from '../errors/errorHandler';
 import { NextResponse } from 'next/server';
 
-interface HttpResponseParams<T> {
-	data?: T;
-	message?: string;
-	status?: number;
-	code?: string;
-}
+export class HttpResponse<T> {
+	public result: HttpResponseResult;
+	public data?: T;
 
-class HttpResponse<T> {
-	public data: T | undefined;
-	public message: string;
-	public status: number;
-	public code: string;
-
-	constructor({ data, message, status, code }: HttpResponseParams<T>) {
+	constructor({ result, data }: HttpResponseParams<T>) {
+		this.result = result;
 		this.data = data ?? undefined;
-		this.message = message ?? '요청 성공';
-		this.status = status ?? 200;
-		this.code = code ?? 'REQUEST_SUCCESS';
 	}
 }
 
+export interface HttpResponseResult {
+	message: string;
+	status: number;
+	code: string;
+}
+
+interface HttpResponseParams<T> {
+	result: HttpResponseResult;
+	data?: T;
+}
+
 export const responseHandler = <T>(params: HttpResponseParams<T>): NextResponse => {
-	const { data, message, status, code } = params;
+	const { result, data } = params;
 
 	// check if data: error
 	if (data instanceof HttpError) {
-		const { message, status, code } = data;
-		const response = new HttpResponse<T>({ message, status, code });
+		const response = new HttpResponse<T>({ result });
 
 		return NextResponse.json(response);
 	}
 
-	const response = new HttpResponse<T>({ data, message, status, code });
+	const response = new HttpResponse<T>({ data, result });
 
 	return NextResponse.json(response);
 };

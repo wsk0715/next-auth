@@ -24,7 +24,7 @@ export class UserRepository {
 			const { data: user, error } = await supabase.from(TABLE_USER).select('*').eq('id', id).single();
 
 			if (error instanceof AuthApiError) {
-				throw new DatabaseError(error, error.message, error.status, error.code);
+				throw new DatabaseError(error);
 			}
 
 			return user;
@@ -32,7 +32,7 @@ export class UserRepository {
 			if (error instanceof HttpError) {
 				throw error;
 			}
-			throw new RepositoryError(error, '유저 조회 중 오류가 발생했습니다.');
+			throw new RepositoryError(error, { message: '유저 조회 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_REPOSITORY' });
 		}
 	}
 
@@ -42,13 +42,13 @@ export class UserRepository {
 			const { error } = await supabase.from(TABLE_USER).insert([user]);
 
 			if (error instanceof AuthApiError) {
-				throw new DatabaseError(error, error.message, error.status, error.code);
+				throw new DatabaseError(error);
 			}
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw error;
 			}
-			throw new RepositoryError(error, '유저 생성 중 오류가 발생했습니다.');
+			throw new RepositoryError(error, { message: '유저 생성 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_REPOSITORY' });
 		}
 	}
 }

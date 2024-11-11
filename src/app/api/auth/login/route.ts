@@ -6,9 +6,9 @@ import { User } from '@/types/user';
 export async function POST(request: Request) {
 	try {
 		const user: User = await request.json();
-		const { message, data } = await AuthService.getInstance().login(user);
+		const { result, data } = await AuthService.getInstance().login(user);
 
-		return responseHandler({ message, data });
+		return responseHandler({ result, data });
 	} catch (error) {
 		return errorHandler(error);
 	}

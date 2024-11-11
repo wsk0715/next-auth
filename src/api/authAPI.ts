@@ -16,7 +16,7 @@ export const AuthAPI = {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
 			}
-			throw errorHandler(new APIError(error, '회원가입 중 오류가 발생했습니다.'));
+			throw errorHandler(new APIError(error, { message: '회원가입 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_API' }));
 		}
 	},
 
@@ -26,7 +26,7 @@ export const AuthAPI = {
 			const response = await api.post('/auth/login', user);
 			const result = response.data;
 
-			const session = result.data;
+			const session = result.data.session;
 			ClientSessionService.setSession(session);
 
 			return result;
@@ -34,7 +34,7 @@ export const AuthAPI = {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
 			}
-			throw errorHandler(new APIError(error, '로그인 중 오류가 발생했습니다.'));
+			throw errorHandler(new APIError(error, { message: '로그인 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_API' }));
 		}
 	},
 
@@ -49,7 +49,7 @@ export const AuthAPI = {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
 			}
-			throw errorHandler(new APIError(error, '로그아웃 중 오류가 발생했습니다.'));
+			throw errorHandler(new APIError(error, { message: '로그아웃 중 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR_ON_API' }));
 		} finally {
 			ClientSessionService.removeSession();
 		}
