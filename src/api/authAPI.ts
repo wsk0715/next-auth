@@ -9,9 +9,9 @@ export const AuthAPI = {
 	signup: async (user: User) => {
 		try {
 			const response = await api.post('/auth/signup', user);
-			const result = response.data;
+			const HttpResult = response.data;
 
-			return result;
+			return HttpResult;
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
@@ -24,12 +24,14 @@ export const AuthAPI = {
 	login: async (user: User) => {
 		try {
 			const response = await api.post('/auth/login', user);
-			const result = response.data;
+			const httpResult = response.data;
 
-			const session = result.data.session;
-			ClientSessionService.setSession(session);
+			if (httpResult.result.status == 200) {
+				const session = httpResult.data.session;
+				ClientSessionService.setSession(session);
+			}
 
-			return result;
+			return httpResult;
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
@@ -42,9 +44,9 @@ export const AuthAPI = {
 	logout: async () => {
 		try {
 			const response = await api.post('/auth/logout');
-			const result = response.data;
+			const HttpResult = response.data;
 
-			return result;
+			return HttpResult;
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
