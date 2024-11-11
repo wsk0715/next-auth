@@ -1,13 +1,14 @@
+import { responseHandler } from '@/lib/response/responseHandler';
+import { errorHandler } from '@/lib/errors/errorHandler';
 import { AuthService } from '@/services/AuthService';
 import { User } from '@/types/user';
-import { NextResponse } from 'next/server';
-import { errorHandler } from '@/lib/errors/errorHandler';
+
 export async function POST(request: Request) {
 	try {
 		const user: User = await request.json();
-		const result = await AuthService.getInstance().signup(user);
+		const { message } = await AuthService.getInstance().signup(user);
 
-		return NextResponse.json(result);
+		return responseHandler({ message });
 	} catch (error) {
 		return errorHandler(error);
 	}

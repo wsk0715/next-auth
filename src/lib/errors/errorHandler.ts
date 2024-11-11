@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server';
+import { responseHandler } from '@/lib/response/responseHandler';
 
 export class HttpError extends Error {
-	constructor(public message: string, public status: number = 500, public code?: string, public error?: unknown) {
+	constructor(public error: unknown, public message: string, public status: number = 500, public code: string = 'INTERNAL_ERROR') {
 		super(message);
+		this.error = error;
+		this.status = status;
+		this.code = code;
 		this.name = 'Unknown HTTP error';
 	}
 }
@@ -14,20 +17,9 @@ export const errorHandler = (error: unknown) => {
 	// console.log(error);
 
 	if (error instanceof HttpError) {
-		return NextResponse.json(
-			{
-				code: error.code,
-				message: error.message,
-			},
-			{ status: error.status }
-		);
+		const { message, status, code } = error;
+		return responseHandler({ message, status, code });
 	}
 
-	return NextResponse.json(
-		{
-			code: 'INTERNAL_ERROR',
-			message: '내부 오류가 발생했습니다.',
-		},
-		{ status: 500 }
-	);
+	return responseHandler({ message: '내부 오류가 발생했습니다.', status: 500, code: 'INTERNAL_ERROR' });
 };

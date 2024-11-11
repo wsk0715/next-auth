@@ -1,12 +1,12 @@
+import { responseHandler } from '@/lib/response/responseHandler';
 import { errorHandler } from '@/lib/errors/errorHandler';
 import { AuthService } from '@/services/AuthService';
-import { NextResponse } from 'next/server';
 
 export async function POST() {
 	try {
-		const result = await AuthService.getInstance().logout();
+		const { message } = await AuthService.getInstance().logout();
 
-		return NextResponse.json(result);
+		return responseHandler({ message });
 	} catch (error) {
 		return errorHandler(error);
 	}

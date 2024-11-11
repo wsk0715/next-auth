@@ -1,48 +1,55 @@
-import { ClientSessionService } from '@/services/clientSessionService';
-import { User } from '@/types/user';
-import { api } from './axiosAPI';
 import { errorHandler, HttpError } from '@/lib/errors/errorHandler';
-import { APIError } from '@/lib/errors/errors';
+import { APIError } from '@/lib/errors/server/internalError';
+import { api } from './axiosAPI';
+import { User } from '@/types/user';
+import { ClientSessionService } from '@/services/clientSessionService';
 
 export const AuthAPI = {
 	// 회원가입 API
 	signup: async (user: User) => {
 		try {
-			const { data } = await api.post('/auth/signup', user);
+			const response = await api.post('/auth/signup', user);
+			const result = response.data;
 
-			return data;
+			return result;
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
 			}
-			throw errorHandler(new APIError('회원가입 중 오류가 발생했습니다.', 500, undefined, error));
+			throw errorHandler(new APIError(error, '회원가입 중 오류가 발생했습니다.'));
 		}
 	},
 
 	// 로그인 API
 	login: async (user: User) => {
 		try {
-			const { data } = await api.post('/auth/login', user);
-			ClientSessionService.setSession(data.session);
+			const response = await api.post('/auth/login', user);
+			const result = response.data;
 
-			return data;
+			const session = result.data;
+			ClientSessionService.setSession(session);
+
+			return result;
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
 			}
-			throw errorHandler(new APIError('로그인 중 오류가 발생했습니다.', 500, undefined, error));
+			throw errorHandler(new APIError(error, '로그인 중 오류가 발생했습니다.'));
 		}
 	},
 
 	// 로그아웃 API
 	logout: async () => {
 		try {
-			await api.post('/auth/logout');
+			const response = await api.post('/auth/logout');
+			const result = response.data;
+
+			return result;
 		} catch (error) {
 			if (error instanceof HttpError) {
 				throw errorHandler(error);
 			}
-			throw errorHandler(new APIError('로그아웃 중 오류가 발생했습니다.', 500, undefined, error));
+			throw errorHandler(new APIError(error, '로그아웃 중 오류가 발생했습니다.'));
 		} finally {
 			ClientSessionService.removeSession();
 		}
