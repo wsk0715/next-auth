@@ -1,13 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import DefaultLayout from '@/components/DefaultLayout';
-import Header from '@/components/Header';
-import { GoToMain } from '@/components/GoToMain';
+import DefaultLayout from '@/components/layouts/defaultLayout';
+import Header from '@/components/common/header';
 import { AuthAPI } from '@/api/authAPI';
 import { validateUserSignup } from '@/validation/userValidator';
 import { createUser } from '@/types/user';
+import Container from '@/components/layouts/container';
+import Form from '@/components/form/form';
+import FormDisplayError from '@/components/form/formDisplayError';
+import FormInputColumn from '@/components/form/formColumn';
+import { HardButtonPrimary } from '@/components/common/buttons/hardButton';
+import { SoftButtonPrimary } from '@/components/common/buttons/softButton';
+import { GoToMain } from '@/components/common/goToMain';
 
 export default function SignUpPage() {
 	const [formData, setFormData] = useState({
@@ -50,43 +55,17 @@ export default function SignUpPage() {
 	return (
 		<DefaultLayout>
 			<Header title="회원가입"></Header>
-			<div className="flex-1">
-				<form onSubmit={handleSubmit} className="space-y-2" noValidate>
-					<div>
-						<label htmlFor="id" className="block mb-2">
-							아이디
-						</label>
-						<input id="id" type="text" value={formData.id} onChange={(e) => setFormData({ ...formData, id: e.target.value })} className="w-full p-2 border rounded" />
-					</div>
-					<div>
-						<label htmlFor="email" className="block mb-2">
-							이메일
-						</label>
-						<input id="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full p-2 border rounded" />
-					</div>
-					<div>
-						<label htmlFor="password" className="block mb-2">
-							비밀번호
-						</label>
-						<input id="password" type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="w-full p-2 border rounded" />
-					</div>
-					<div>
-						<label htmlFor="confirmPassword" className="block mb-2">
-							비밀번호 확인
-						</label>
-						<input id="confirmPassword" type="password" value={formData.passwordConfirm} onChange={(e) => setFormData({ ...formData, passwordConfirm: e.target.value })} className="w-full p-2 border rounded" />
-					</div>
-					<div className="h-8 flex items-center justify-center">{error && <div className="text-red-500 text-sm">{error}</div>}</div>
-					<button type="submit" className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-						회원가입
-					</button>
-					<div className="text-center">
-						<Link href="/auth/login" className="text-blue-500 hover:text-blue-700 text-sm">
-							이미 계정이 있으신가요? 로그인하기
-						</Link>
-					</div>
-				</form>
-			</div>
+			<Container>
+				<Form onSubmit={handleSubmit}>
+					<FormInputColumn id="id" label="아이디" type="text" value={formData.id} onChange={(e) => setFormData({ ...formData, id: e })} />
+					<FormInputColumn id="email" label="이메일" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e })} />
+					<FormInputColumn id="password" label="비밀번호" type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e })} />
+					<FormInputColumn id="confirmPassword" label="비밀번호 확인" type="password" value={formData.passwordConfirm} onChange={(e) => setFormData({ ...formData, passwordConfirm: e })} />
+					<FormDisplayError error={error} />
+					<HardButtonPrimary text="회원가입" />
+					<SoftButtonPrimary href="/auth/login" text="이미 계정이 있으신가요? 로그인하기" />
+				</Form>
+			</Container>
 			<GoToMain />
 		</DefaultLayout>
 	);

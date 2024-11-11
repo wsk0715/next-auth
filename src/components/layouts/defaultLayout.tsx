@@ -1,11 +1,11 @@
 import { ReactNode } from 'react';
 import Image from 'next/image';
 
-interface LayoutProps {
+interface DefaultLayoutProps {
 	children: ReactNode;
 }
 
-export default function DefaultLayout({ children }: LayoutProps) {
+export default function DefaultLayout({ children }: DefaultLayoutProps) {
 	return (
 		<main className="flex flex-col min-h-screen p-4 bg-[#bfbfbf]">
 			<div className="w-full max-w-[440px] min-h-[calc(100vh-2rem)] mx-auto p-4 bg-white rounded-lg shadow-md flex flex-col">

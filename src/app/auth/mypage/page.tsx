@@ -1,13 +1,16 @@
-import DefaultLayout from '@/components/DefaultLayout';
-import Header from '@/components/Header';
+import DefaultLayout from '@/components/layouts/defaultLayout';
+import { GoToMain } from '@/components/common/goToMain';
+import Header from '@/components/common/header';
+import Container from '@/components/layouts/container';
+import Column from '@/components/layouts/column';
 
 export default function MyPage() {
 	return (
 		<DefaultLayout>
 			<Header title="마이페이지"></Header>
-			<div className="flex-1">
-				<div className="flex flex-col items-center justify-center gap-2 px-4 py-2">마이페이지</div>
-			</div>
+			<Container>
+				<Column>마이페이지</Column>
+			</Container>
 			<GoToMain />
 		</DefaultLayout>
 	);

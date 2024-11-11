@@ -1,11 +1,11 @@
 'use client';
 
-import DefaultLayout from '@/components/DefaultLayout';
+import DefaultLayout from '@/components/layouts/defaultLayout';
 import { useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import bcryptjs from 'bcryptjs';
-import Header from '@/components/Header';
-import { GoToMain } from '@/components/GoToMain';
+import Header from '@/components/common/header';
+import { GoToMain } from '@/components/common/goToMain';
 
 export default function SupabasePage() {
 	// Supabase 클라이언트 생성

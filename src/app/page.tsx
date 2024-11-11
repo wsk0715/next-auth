@@ -1,21 +1,19 @@
-import DefaultLayout from '@/components/DefaultLayout';
-import Header from '@/components/Header';
-import Link from 'next/link';
+import DefaultLayout from '@/components/layouts/defaultLayout';
+import Header from '@/components/common/header';
+import Container from '@/components/layouts/container';
+import Column from '@/components/layouts/column';
+import { SoftButtonPrimary } from '@/components/common/buttons/softButton';
 
 export default function Home() {
 	return (
 		<DefaultLayout>
 			<Header title="Next-auth"></Header>
-			<div className="flex-1">
-				<div className="flex flex-col items-center justify-center gap-2 px-4 py-5">
-					<Link href="/supabase" className="text-blue-500 hover:text-blue-700">
-						Supabase 페이지로 이동
-					</Link>
-					<Link href="/auth" className="text-blue-500 hover:text-blue-700">
-						ID/PW 인증 페이지로 이동
-					</Link>
-				</div>
-			</div>
+			<Container>
+				<Column>
+					<SoftButtonPrimary href="/supabase" text="Supabase 페이지로 이동" />
+					<SoftButtonPrimary href="/auth" text="ID/PW 인증 페이지로 이동" />
+				</Column>
+			</Container>
 		</DefaultLayout>
 	);
 }
