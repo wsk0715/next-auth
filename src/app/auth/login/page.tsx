@@ -22,13 +22,15 @@ export default function IdPwAuthPage() {
 		try {
 			// 로그인 API 호출 및 응답 데이터 받기
 			const formUser = createUser({ id: formData.id, password: formData.password });
-			await AuthAPI.login(formUser);
+			const response = await AuthAPI.login(formUser);
 
-			// 로그인 성공 응답
-			alert('로그인에 성공했습니다.');
-			window.location.href = '/auth';
+			if (response.result.status === 200) {
+				alert('로그인에 성공했습니다.');
+				window.location.href = '/auth';
+			} else {
+				setError(response.result.message);
+			}
 		} catch (err) {
-			console.error('로그인 에러:', err);
 			setError(err instanceof Error ? err.message : '로그인 중 오류가 발생했습니다.');
 		}
 	};

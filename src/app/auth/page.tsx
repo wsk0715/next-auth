@@ -6,21 +6,23 @@ import { GoToMain } from '@/components/GoToMain';
 import Header from '@/components/Header';
 import Link from 'next/link';
 import { AuthAPI } from '@/api/authAPI';
-import { User, createUser } from '@/types/user';
+import { User } from '@/types/user';
 
 export default function AuthPage() {
 	const [userInfo, setUserInfo] = useState<User | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const [session, setSession] = useState(false);
 
 	useEffect(() => {
 		const session = sessionStorage.getItem('session');
+		const sessionData = session ? JSON.parse(session) : null;
 
-		if (session) {
+		if (sessionData && sessionData.user) {
 			try {
-				const user = JSON.parse(session).user;
-				const userInfo = createUser({ id: user.id, email: user.email });
+				const user = sessionData.user;
 
-				setUserInfo(userInfo);
+				setUserInfo(user);
+				setSession(true);
 			} catch (error) {
 				console.error('세션 정보 파싱 에러:', error);
 			}
@@ -62,12 +64,20 @@ export default function AuthPage() {
 					)}
 				</div>
 				<div className="flex flex-col items-center justify-center gap-2 px-4 py-5">
-					<Link href="/auth/login" className="text-blue-500 hover:text-blue-700">
-						로그인 페이지로 이동
-					</Link>
-					<Link href="/auth/signup" className="text-blue-500 hover:text-blue-700">
-						회원가입 페이지로 이동
-					</Link>
+					{session ? (
+						<Link href="/auth/mypage" className="text-blue-500 hover:text-blue-700">
+							회원정보 관리
+						</Link>
+					) : (
+						<>
+							<Link href="/auth/login" className="text-blue-500 hover:text-blue-700">
+								로그인 페이지로 이동
+							</Link>
+							<Link href="/auth/signup" className="text-blue-500 hover:text-blue-700">
+								회원가입 페이지로 이동
+							</Link>
+						</>
+					)}
 				</div>
 			</div>
 			<GoToMain />

@@ -33,11 +33,14 @@ export default function SignUpPage() {
 
 		try {
 			// 회원가입 API 호출
-			await AuthAPI.signup(formUser);
+			const response = await AuthAPI.signup(formUser);
 
-			// 회원가입 성공 응답
-			alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
-			window.location.href = '/auth/login';
+			if (response.result.status === 200) {
+				alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
+				window.location.href = '/auth/login';
+			} else {
+				setError(response.result.message);
+			}
 		} catch (err) {
 			console.error('회원가입 에러:', err);
 			setError(err instanceof Error ? err.message : '회원가입 중 오류가 발생했습니다.');
