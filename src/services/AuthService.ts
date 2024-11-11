@@ -32,7 +32,7 @@ export class AuthService {
 			});
 
 			if (error instanceof AuthApiError) {
-				throw new DatabaseError(error);
+				throw new DatabaseError(error, { message: error.message, status: error.status, code: error.code! });
 			}
 
 			const hashedPassword = await bcrypt.hash(user.password!, 10);

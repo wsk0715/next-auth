@@ -24,7 +24,7 @@ export class UserRepository {
 			const { data: user, error } = await supabase.from(TABLE_USER).select('*').eq('id', id).single();
 
 			if (error instanceof AuthApiError) {
-				throw new DatabaseError(error);
+				throw new DatabaseError(error, { message: error.message, status: error.status, code: error.code });
 			}
 
 			return user;

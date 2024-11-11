@@ -20,8 +20,9 @@ export class HttpError extends Error {
 export const errorHandler = (error: unknown) => {
 	if (error instanceof HttpError) {
 		const result = error.result;
-		console.error(`\n[Error] Code - ${result.code}`);
-		console.error(`[Error] Message - ${result.message}\n`);
+		console.error(`\n[Error] Message - ${result.message}`);
+		console.error(`[Error] Status - ${result.status}`);
+		console.error(`[Error] Code - ${result.code}\n`);
 
 		// console.log(error);
 
